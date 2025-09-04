@@ -7,30 +7,6 @@ public class UserRepository : IUserRepository
 {
     private readonly string _connectionString;
     public UserRepository(IConfiguration configuration) => _connectionString = configuration.GetConnectionString("DefaultConnection")!;
-    public async Task CreateAsync(User user)
-    {
-        using var conn = new NpgsqlConnection(_connectionString);
-        await conn.OpenAsync();
-
-        var cmd = new NpgsqlCommand(
-            "INSERT INTO users (name, email, password_hash, role) VALUES (@name, @email, @password, @role)", conn);
-        cmd.Parameters.AddWithValue("name", user.Name);
-        cmd.Parameters.AddWithValue("email", user.Email);
-        cmd.Parameters.AddWithValue("password", user.PasswordHash);
-        cmd.Parameters.AddWithValue("role", user.Role);
-
-        await cmd.ExecuteNonQueryAsync();
-    }
-    public async Task DeleteAsync(int id)
-    {
-        using var conn = new NpgsqlConnection(_connectionString);
-        await conn.OpenAsync();
-
-        var cmd = new NpgsqlCommand("DELETE FROM users WHERE id = @id", conn);
-        cmd.Parameters.AddWithValue("id", id);
-
-        await cmd.ExecuteNonQueryAsync();
-    }
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         var users = new List<User>();
@@ -53,29 +29,6 @@ public class UserRepository : IUserRepository
         }
 
         return users;
-    }
-    public async Task<User?> GetByEmailAsync(string email)
-    {
-        using var conn = new NpgsqlConnection(_connectionString);
-        await conn.OpenAsync();
-
-        var cmd = new NpgsqlCommand("SELECT id, name, email, password_hash, role FROM users WHERE email = @email", conn);
-        cmd.Parameters.AddWithValue("email", email);
-
-        var reader = await cmd.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            return new User
-            {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                Email = reader.GetString(2),
-                PasswordHash = reader.GetString(3),
-                Role = reader.GetString(4)
-            };
-        }
-
-        return null;
     }
     public async Task<User?> GetByIdAsync(int id)
     {
@@ -100,6 +53,43 @@ public class UserRepository : IUserRepository
 
         return null;
     }
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var cmd = new NpgsqlCommand("SELECT id, name, email, password_hash, role FROM users WHERE email = @email", conn);
+        cmd.Parameters.AddWithValue("email", email);
+
+        var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new User
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.GetString(3),
+                Role = reader.GetString(4)
+            };
+        }
+
+        return null;
+    }
+    public async Task CreateAsync(User user)
+    {
+        using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var cmd = new NpgsqlCommand(
+            "INSERT INTO users (name, email, password_hash, role) VALUES (@name, @email, @password, @role)", conn);
+        cmd.Parameters.AddWithValue("name", user.Name);
+        cmd.Parameters.AddWithValue("email", user.Email);
+        cmd.Parameters.AddWithValue("password", user.PasswordHash);
+        cmd.Parameters.AddWithValue("role", user.Role);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
     public async Task UpdateAsync(User user)
     {
         using var conn = new NpgsqlConnection(_connectionString);
@@ -115,4 +105,15 @@ public class UserRepository : IUserRepository
 
         await cmd.ExecuteNonQueryAsync();
     }
+    public async Task DeleteAsync(int id)
+    {
+        using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var cmd = new NpgsqlCommand("DELETE FROM users WHERE id = @id", conn);
+        cmd.Parameters.AddWithValue("id", id);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+    
 }

@@ -7,7 +7,7 @@ import PeopleIcon from "@mui/icons-material/People";
 
 import DashboardCard from "../../components/DashboardCard";
 import Sidebar, { SidebarItem } from "../../components/Sidebar";
-import FornecedorForm from "../supplier/SupplierForm";
+import SupplierForm from "../supplier/SupplierForm";
 import InvoiceForm from "../invoice/InvoiceForm";
 import InvoiceDetails from "../invoice/InvoiceDetails";
 
@@ -30,8 +30,9 @@ const Dashboard = () => {
   const [openInvoiceForm, setOpenInvoiceForm] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [editingInvoiceId, setEditingInvoiceId] = useState<number | null>(null);
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
-   const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("token"); 
     navigate("/"); 
   };
@@ -68,6 +69,11 @@ const Dashboard = () => {
     if (invoice) setViewingInvoice(invoice);
   };
 
+  const handleEditUser = (id: number) => {
+  setEditingUserId(id);     // salva o ID do usuário que será editado
+  setOpenUserForm(true);    // abre o modal de formulário
+  };
+
   const handleDelete = async (id: number) => {
     if (!window.confirm("Deseja realmente deletar esta nota fiscal?")) return;
 
@@ -79,8 +85,20 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteUser = async (id: number) => {
+    if (!window.confirm("Deseja realmente deletar este fornecedor?")) return;
+
+    try {
+      await api.delete(`/Users/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    });
+      refreshUsers(); // atualiza a lista
+    } catch (err) {
+      console.error("Erro ao deletar fornecedor:", err);
+    }
+  };
   // Colunas
-  const userColumns = getUserColumns();
+  const userColumns = getUserColumns(handleEditUser, handleDeleteUser);
   const invoiceColumns = getInvoiceColumns(role, handleView, handleEdit, handleDelete);
 
   return (
@@ -119,13 +137,17 @@ const Dashboard = () => {
             <Button
               variant="contained"
               sx={styles.mainButton}
-              onClick={() => setOpenUserForm(true)}
+                onClick={() => {
+              setEditingUserId(null);
+              setOpenUserForm(true);
+            }}
             >
               Cadastrar Fornecedor
             </Button>
 
             {openUserForm && (
-              <FornecedorForm
+              <SupplierForm
+                userId={editingUserId ?? undefined} 
                 onClose={() => setOpenUserForm(false)}
                 onSaved={refreshUsers}
               />

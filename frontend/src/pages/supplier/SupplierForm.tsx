@@ -1,36 +1,67 @@
-import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, TextField, Button } from "@mui/material";
-
+import { useEffect, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import api from "../../api/api";
 import styles from "./SupplierForm.styles";
 
 interface Props {
-  onClose: () => void;
-  onSaved: () => void;
+  userId?: number;      
+  onClose: () => void;   
+  onSaved: () => void; 
 }
 
-const SupplierForm = ({ onClose, onSaved }: Props) => {
+const SupplierForm = ({ userId, onClose, onSaved }: Props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("pj");
 
+  useEffect(() => {
+    if (userId) {
+      api.get(`/Users/${userId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      }).then(res => {
+        setName(res.data.name);
+        setEmail(res.data.email);
+        setRole(res.data.role);
+      }).catch(err => {
+        console.error("Erro ao carregar usuário:", err);
+      });
+    } else {
+      
+      setName("");
+      setEmail("");
+      setPassword("");
+      setRole("pj");
+    }
+  }, [userId]);
+
   const handleSubmit = async () => {
-    if (!name || !email || !password) return alert("Preencha todos os campos");
+    if (!name || !email) return alert("Preencha todos os campos");
 
     try {
-      await api.post("/Users", { name, email, password, role });
-      onSaved();
-      onClose();
+      const payload: any = { name, email, role };
+      if (password) payload.password = password;
+
+      if (userId) {      
+        await api.put(`/Users/${userId}`, payload, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+      } else {     
+        if (!password) return alert("Preencha a senha");
+        await api.post("/Users", payload);
+      }
+
+      onSaved(); 
+      onClose(); 
     } catch (err) {
-      console.error(err);
-      alert("Erro ao cadastrar fornecedor");
+      console.error("Erro ao salvar usuário:", err);
+      alert("Ocorreu um erro ao salvar o usuário.");
     }
   };
 
   return (
     <Dialog open onClose={onClose}>
-      <DialogTitle>Cadastrar Fornecedor</DialogTitle>
+      <DialogTitle>{userId ? "Editar Fornecedor" : "Cadastrar Fornecedor"}</DialogTitle>
       <DialogContent sx={styles.dialogContent}>
         <TextField
           label="Nome Fantasia"
@@ -47,13 +78,21 @@ const SupplierForm = ({ onClose, onSaved }: Props) => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="Senha"
+          label={userId ? "Nova Senha (opcional)" : "Senha"}
           type="password"
           fullWidth
           sx={styles.textField}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          placeholder={userId ? "Deixe vazio para manter a senha atual" : ""}
         />
+        <FormControl fullWidth sx={styles.textField}>
+          <InputLabel>Role</InputLabel>
+          <Select value={role} label="Role" onChange={e => setRole(e.target.value)}>
+            <MenuItem value="pj">Fornecedor</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+          </Select>
+        </FormControl>
         <Button
           variant="contained"
           fullWidth

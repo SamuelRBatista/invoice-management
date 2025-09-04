@@ -41,6 +41,14 @@ public class UserService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        return await _userRepository.GetAllAsync();
+    }
+    public async Task<User?> GetUserByIdAsync(int id)
+    {
+        return await _userRepository.GetByIdAsync(id);
+    }
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _userRepository.GetByEmailAsync(email);
@@ -57,9 +65,31 @@ public class UserService
 
         await _userRepository.CreateAsync(user);
         return user;
-    }
-     public async Task<IEnumerable<User>> GetAllUsersAsync()
+    } 
+    public async Task<User?> UpdateUserAsync(int id, UpdateUserRequest request)
     {
-        return await _userRepository.GetAllAsync();
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null) 
+            return null;
+
+        user.Name = request.Name;
+        user.Email = request.Email;
+        user.Role = request.Role;
+    
+        if (!string.IsNullOrEmpty(request.Password))
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+    
+        await _userRepository.UpdateAsync(user);
+
+        return user;
+    } 
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+            return false; 
+    
+        await _userRepository.DeleteAsync(id);
+        return true;
     }
 }
