@@ -3,14 +3,9 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Data;
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-    {
-    }
-
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Invoice> Invoices { get; set; } = null!;
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // ============================
@@ -18,7 +13,7 @@ public class AppDbContext : DbContext
         // ============================
         modelBuilder.Entity<User>(entity =>
         {
-            entity.ToTable("users"); // snake_case
+            entity.ToTable("users");
             entity.HasKey(u => u.Id);
 
             entity.Property(u => u.Id)
@@ -55,7 +50,7 @@ public class AppDbContext : DbContext
         // ============================
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.ToTable("invoices"); // snake_case
+            entity.ToTable("invoices");
             entity.HasKey(i => i.Id);
 
             entity.Property(i => i.Id)
@@ -72,7 +67,7 @@ public class AppDbContext : DbContext
 
             entity.Property(i => i.ReferenceMonth)
                   .IsRequired()
-                  .HasMaxLength(20) // MM/YYYY
+                  .HasMaxLength(20)
                   .HasColumnName("reference_month");
 
             entity.Property(i => i.FilePath)
@@ -86,7 +81,7 @@ public class AppDbContext : DbContext
 
             entity.Property(i => i.CreatedAt)
                   .HasColumnName("created_at")
-                  .HasDefaultValueSql("NOW()"); // timestamp padrão PostgreSQL
+                  .HasDefaultValueSql("NOW()");
         });
     }
 }

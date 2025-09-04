@@ -6,12 +6,7 @@ using Microsoft.Extensions.Configuration;
 public class UserRepository : IUserRepository
 {
     private readonly string _connectionString;
-
-    public UserRepository(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
-    }
-
+    public UserRepository(IConfiguration configuration) => _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     public async Task CreateAsync(User user)
     {
         using var conn = new NpgsqlConnection(_connectionString);
@@ -26,7 +21,6 @@ public class UserRepository : IUserRepository
 
         await cmd.ExecuteNonQueryAsync();
     }
-
     public async Task DeleteAsync(int id)
     {
         using var conn = new NpgsqlConnection(_connectionString);
@@ -37,7 +31,6 @@ public class UserRepository : IUserRepository
 
         await cmd.ExecuteNonQueryAsync();
     }
-
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         var users = new List<User>();
@@ -61,7 +54,6 @@ public class UserRepository : IUserRepository
 
         return users;
     }
-
     public async Task<User?> GetByEmailAsync(string email)
     {
         using var conn = new NpgsqlConnection(_connectionString);
@@ -85,7 +77,6 @@ public class UserRepository : IUserRepository
 
         return null;
     }
-
     public async Task<User?> GetByIdAsync(int id)
     {
         using var conn = new NpgsqlConnection(_connectionString);
@@ -109,7 +100,6 @@ public class UserRepository : IUserRepository
 
         return null;
     }
-
     public async Task UpdateAsync(User user)
     {
         using var conn = new NpgsqlConnection(_connectionString);

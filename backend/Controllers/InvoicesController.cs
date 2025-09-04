@@ -6,22 +6,16 @@ using Microsoft.AspNetCore.Authorization;
 public class InvoicesController : ControllerBase
 {
     private readonly InvoiceService _invoiceService;
+    public InvoicesController(InvoiceService invoiceService) => _invoiceService = invoiceService;   
 
-    public InvoicesController(InvoiceService invoiceService)
-    {
-        _invoiceService = invoiceService;
-    }
-
-    // GET: api/invoices
     [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllInvoices()
     {
-        var invoices = await _invoiceService.GetAllInvoicesAsync();
+        var invoices = await _invoiceService.GetAllInvoicesAsync();       
         return Ok(invoices);
     }
-
-    // GET: api/invoices/my
+       
     [Authorize]
     [HttpGet("my")]
     public async Task<IActionResult> GetMyInvoices()
@@ -30,8 +24,7 @@ public class InvoicesController : ControllerBase
         var invoices = await _invoiceService.GetInvoicesByUserIdAsync(userId);
         return Ok(invoices);
     }
-
-    // POST: api/invoices
+  
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateInvoice([FromForm] InvoiceCreateRequest request)
@@ -41,20 +34,30 @@ public class InvoicesController : ControllerBase
         var invoice = await _invoiceService.CreateInvoiceAsync(userId, request);
         return Ok(invoice);
     }
-    
+
     [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateInvoice(int id, [FromForm] InvoiceCreateRequest request)
     {
         int userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        bool isAdmin = User.IsInRole("admin");
 
-        var updated = await _invoiceService.UpdateInvoiceAsync(id, userId, request);
-        if (!updated)
-            return NotFound();
-
-        return Ok();
+        try
+        {
+            var updated = await _invoiceService.UpdateInvoiceAsync(id, userId, isAdmin, request);
+            if (!updated)
+                return NotFound("Nota fiscal não encontrada.");
+            return Ok();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message); // retorna 403
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Erro interno: {ex.Message}");
+        }
     }
-
 
     [Authorize]
     [HttpDelete("{id}")]
@@ -67,7 +70,6 @@ public class InvoicesController : ControllerBase
         return NoContent(); // 204
     }
 
-    // GET: api/invoices/download/{filename}
     [Authorize]
     [HttpGet("download/{filename}")]
     public IActionResult DownloadFile(string filename)

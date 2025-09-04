@@ -286,3 +286,4 @@
 /home/samuka/Área de trabalho/invoice-management/backend/obj/Debug/net8.0/backend.pdb
 /home/samuka/Área de trabalho/invoice-management/backend/obj/Debug/net8.0/backend.genruntimeconfig.cache
 /home/samuka/Área de trabalho/invoice-management/backend/obj/Debug/net8.0/ref/backend.dll
+/home/samuka/Área de trabalho/invoice-management/backend/obj/Debug/net8.0/backend.sourcelink.json

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, TextField, Button } from "@mui/material";
 
 import api from "../../api/api";
-import styles from "./FornecedorForm.styles";
+import styles from "./SupplierForm.styles";
 
 interface Props {
   onClose: () => void;
   onSaved: () => void;
 }
 
-const FornecedorForm = ({ onClose, onSaved }: Props) => {
+const SupplierForm = ({ onClose, onSaved }: Props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,4 +67,4 @@ const FornecedorForm = ({ onClose, onSaved }: Props) => {
   );
 };
 
-export default FornecedorForm;
+export default SupplierForm;

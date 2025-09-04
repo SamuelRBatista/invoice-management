@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Dialog } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -6,7 +7,7 @@ import PeopleIcon from "@mui/icons-material/People";
 
 import DashboardCard from "../../components/DashboardCard";
 import Sidebar, { SidebarItem } from "../../components/Sidebar";
-import FornecedorForm from "../supplier/FornecedorForm";
+import FornecedorForm from "../supplier/SupplierForm";
 import InvoiceForm from "../invoice/InvoiceForm";
 import InvoiceDetails from "../invoice/InvoiceDetails";
 
@@ -21,6 +22,7 @@ import api from "../../api/api";
 import { Invoice } from "./Types";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const role = (getRole() as "admin" | "pj") || "pj";
 
   // Estados
@@ -29,7 +31,10 @@ const Dashboard = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [editingInvoiceId, setEditingInvoiceId] = useState<number | null>(null);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
-
+   const handleLogout = () => {
+    localStorage.removeItem("token"); 
+    navigate("/"); 
+  };
   // Menu lateral
   const menuItems: SidebarItem[] =
     role === "admin"
@@ -83,7 +88,8 @@ const Dashboard = () => {
       <Sidebar
         selectedMenu={selectedMenu}
         onMenuSelect={setSelectedMenu}
-        menuItems={menuItems}
+        menuItems={menuItems} 
+        onLogout={handleLogout}
       />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

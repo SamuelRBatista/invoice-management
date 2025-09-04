@@ -3,7 +3,6 @@ export const setAuth = (role: string, token?: string) => {
   if (token) localStorage.setItem("token", token);
 };
 
-
 export const getRole = (): string | null => {
   return localStorage.getItem("role");
 };

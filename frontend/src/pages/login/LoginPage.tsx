@@ -30,6 +30,7 @@ const LoginPage = () => {
       setAuth(role, token);
 
       navigate("/dashboard");
+      
     } catch (err) {
       console.error(err);
       alert("Login falhou");

@@ -6,13 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 public class UsersController : ControllerBase
 {
     private readonly UserService _userService;
-
-    public UsersController(UserService userService)
-    {
-        _userService = userService;
-    }
-
-    // POST: api/users/login
+    public UsersController(UserService userService) =>  _userService = userService;
+   
    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
@@ -22,14 +17,9 @@ public class UsersController : ControllerBase
 
         var token = await _userService.AuthenticateAsync(request.Email, request.Password);
 
-        // retorna token + role
         return Ok(new { Token = token, Role = user.Role });
     }
-  
 
-    
-
-    // GET: api/users
     [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
@@ -38,9 +28,6 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
     
-
-    // POST: api/users
-    // [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {

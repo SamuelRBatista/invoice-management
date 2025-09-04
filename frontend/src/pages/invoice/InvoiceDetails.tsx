@@ -22,11 +22,11 @@ const InvoiceDetails = ({ invoice, onClose }: InvoiceDetailsProps) => {
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="subtitle2" color="textSecondary">Referência:</Typography>
-            <Typography>{invoice.reference_month}</Typography>
+            <Typography>{invoice.referenceMonth}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="subtitle2" color="textSecondary">Fornecedor ID:</Typography>
-            <Typography>{invoice.user_id}</Typography>
+            <Typography>{invoice.userId}</Typography>
           </Box>
           <Box display="flex" flexDirection="column">
             <Typography variant="subtitle2" color="textSecondary">Observações:</Typography>
@@ -34,7 +34,7 @@ const InvoiceDetails = ({ invoice, onClose }: InvoiceDetailsProps) => {
           </Box>
           <Box display="flex" flexDirection="column">
             <Typography variant="subtitle2" color="textSecondary">Arquivo:</Typography>
-            <Link href={`http://localhost:5000/${invoice.file_path}`} target="_blank" rel="noreferrer">
+            <Link href={`http://localhost:5000/uploads/${invoice.filePath}`} target="_blank" rel="noreferrer">
               Ver PDF
             </Link>
           </Box>

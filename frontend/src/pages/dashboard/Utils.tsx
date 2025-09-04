@@ -10,7 +10,6 @@ export const getUserColumns = (): GridColDef[] => [
   { field: "role", headerName: "Role", width: 120 },
 ];
 
-
 // Colunas de Notas
 export const getInvoiceColumns = (
   role: string,
@@ -20,15 +19,25 @@ export const getInvoiceColumns = (
 ): GridColDef[] => [
   { field: "id", headerName: "ID", width: 80 },
   { field: "title", headerName: "Título", flex: 1 },
-  { field: "reference_month", headerName: "Referência", width: 150 },
-  ...(role === "admin" ? [{ field: "user_id", headerName: "Fornecedor ID", width: 150 }] : []),
+  { field: "referenceMonth", headerName: "Referência", width: 150 },
+  ...(role === "admin"
+  ? [
+      {
+        field: "user",
+        headerName: "Fornecedor",
+        width: 150,
+         renderCell: (params: GridRenderCellParams<Invoice>) =>
+          params.row?.user?.name || "-",
+      },
+    ]
+  : []),
   {
-    field: "file_path",
+    field: "filePath",
     headerName: "Arquivo",
     flex: 1,
     renderCell: (params) => (
       <a
-        href={`http://localhost:5000/${params.value}`}
+        href={`http://localhost:5000/uploads/${params.value}`}
         target="_blank"
         rel="noreferrer"
       >

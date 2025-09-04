@@ -8,8 +8,9 @@ export interface User {
 export interface Invoice {
   id: number;
   title: string;
-  reference_month: string;
-  file_path: string | null;
+  referenceMonth: string;
+  filePath: string | null;
   observations?: string;
-  user_id?: number;
+  userId?: number;
+  user?: User;
 }

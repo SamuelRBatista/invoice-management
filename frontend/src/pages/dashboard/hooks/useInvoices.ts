@@ -8,10 +8,12 @@ export const useInvoices = (role: "admin" | "pj") => {
   const [loading, setLoading] = useState(false);
 
   const fetchInvoices = async () => {
+    debugger;
     try {
       setLoading(true);
       const endpoint = role === "admin" ? "/Invoices" : "/Invoices/my";
       const res = await api.get<Invoice[]>(endpoint);
+      console.log("As notas retornadas da api", res);
       setInvoices(res.data);
     } catch (err) {
       console.error("Erro ao buscar notas:", err);

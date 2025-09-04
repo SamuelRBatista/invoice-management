@@ -1,4 +1,5 @@
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Drawer } from "@mui/material";
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Drawer, Divider } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "./Sidebar.styles";
 
 export interface SidebarItem {
@@ -12,9 +13,11 @@ interface SidebarProps {
   onMenuSelect: (menu: string) => void;
   menuItems: SidebarItem[];
   drawerWidth?: number;
+  onLogout: () => void;
 }
 
-const Sidebar = ({ selectedMenu, onMenuSelect, menuItems }: SidebarProps) => {
+const Sidebar = ({ selectedMenu, onMenuSelect, menuItems, onLogout}: SidebarProps) => {
+
   return (
     <Drawer variant="permanent" sx={styles.drawer}>
       <Typography variant="h6" sx={styles.title}>
@@ -35,6 +38,22 @@ const Sidebar = ({ selectedMenu, onMenuSelect, menuItems }: SidebarProps) => {
             </ListItemButton>
           </ListItem>
         ))}
+      </List>
+
+      <Divider sx={{ mt: "auto" }} />
+      
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={onLogout}
+            sx={{ ...styles.listItemButton }}
+          >
+            <ListItemIcon sx={{...styles.listItemButton }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Drawer>
   );

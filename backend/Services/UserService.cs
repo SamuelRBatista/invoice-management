@@ -12,14 +12,11 @@ public class UserService
 {
     private readonly IUserRepository _userRepository;
     private readonly JwtSettings _jwtSettings;
-
     public UserService(IUserRepository userRepository, JwtSettings jwtSettings)
     {
         _userRepository = userRepository;
         _jwtSettings = jwtSettings;
     }
-
-    // Cria JWT
     public async Task<string?> AuthenticateAsync(string email, string password)
     {
         var user = await _userRepository.GetByEmailAsync(email);
@@ -44,13 +41,10 @@ public class UserService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _userRepository.GetByEmailAsync(email);
     }
-
-    // Cria usuário
     public async Task<User> CreateUserAsync(CreateUserRequest request)
     {
         var user = new User
@@ -64,9 +58,7 @@ public class UserService
         await _userRepository.CreateAsync(user);
         return user;
     }
-
-    // Lista todos os usuários
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+     public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         return await _userRepository.GetAllAsync();
     }
