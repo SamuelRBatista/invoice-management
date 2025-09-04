@@ -19,6 +19,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    debugger;
     if (!name || !email || !password || !roleInput) return alert("Preencha todos os campos");
 
     try {

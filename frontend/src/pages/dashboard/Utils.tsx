@@ -1,14 +1,51 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
-import { Invoice } from "./Types";
+import { Invoice, User } from "./Types";
 
 // Colunas de Fornecedores
-export const getUserColumns = (): GridColDef[] => [
+export const getUserColumns = (onEdit?: (id: number) => void, onDelete?: (id: number) => void): GridColDef[] => [
   { field: "id", headerName: "ID", width: 80 },
   { field: "name", headerName: "Nome", flex: 1 },
   { field: "email", headerName: "Email", flex: 1 },
   { field: "role", headerName: "Role", width: 120 },
+  {
+    field: "actions",
+    headerName: "Ações",
+    width: 160,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams<User>) => (
+      <div style={{ display: "flex", gap: 8 }}>
+        {onEdit && (
+          <Button
+            variant="contained"
+            color="warning"
+            size="small"
+            sx={{ fontSize: "0.60rem" }}
+            onClick={() => onEdit(params.row.id)}
+          >
+            Editar
+          </Button>
+        )}
+        {onDelete && (
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            sx={{ fontSize: "0.60rem" }}
+            onClick={() => onDelete(params.row.id)}
+          >
+            Deletar
+          </Button>
+        )}
+      </div>
+    ),
+  },
 ];
+
+
+
+
 
 // Colunas de Notas
 export const getInvoiceColumns = (
