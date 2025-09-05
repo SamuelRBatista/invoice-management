@@ -79,11 +79,22 @@ docker-compose up -d
 ### Executar script do banco (em outro terminal)
 psql -h localhost -U postgres -f scripts/init-database.sql
 
+### Execute as migrações
+docker compose exec backend sh
+dotnet new tool-manifest
+dotnet tool install dotnet-ef --version 8.0.0
+dotnet restore
+dotnet clean
+dotnet build
+~/.dotnet/tools/dotnet-ef database update
+
+
 ### Executar a aplicação
 cd Backend
 dotnet run
 
 ## 🔐 USUÁRIO PADRÃO:
+- Nome : SRBCOMERCIAL
 - Email: admin@financeiro.com
 - Senha: admin123
 - Perfil: Admin
