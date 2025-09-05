@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+WORKDIR /app
+
+COPY . ./
+
+# Instalar dotnet-ef
+RUN dotnet tool install --global dotnet-ef
+
+# Expõe porta do app e porta para debug
+EXPOSE 5000
+EXPOSE 5005
+
+# Script para desenvolvimento com migrations
+ENTRYPOINT ["bash", "-c", "dotnet ef database update && dotnet watch run --urls http://0.0.0.0:5000"]

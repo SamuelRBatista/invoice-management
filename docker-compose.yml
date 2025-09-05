@@ -1,9 +1,7 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:15
-    container_name: invoice-postgres
+    container_name: invoice-postgres-dev
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -12,6 +10,51 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - invoice-network-dev
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: invoice-backend-dev
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=invoices;Username=postgres;Password=postgres
+    ports:
+      - "5000:5000"
+      - "5005:5005"  # Porta para debug
+    volumes:
+      - ./backend:/app  # Hot reload
+      - ~/.nuget/packages:/root/.nuget/packages  # Cache nuget
+    depends_on:
+      - postgres
+    networks:
+      - invoice-network-dev
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: invoice-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+      - CHOKIDAR_USEPOLLING=true  # Para hot reload no Docker
+    volumes:
+      - ./frontend:/app  # Hot reload
+      - /app/node_modules  # Isolar node_modules
+    depends_on:
+      - backend
+    networks:
+      - invoice-network-dev
 
 volumes:
   postgres_data:
+
+networks:
+  invoice-network-dev:
+    driver: bridge
